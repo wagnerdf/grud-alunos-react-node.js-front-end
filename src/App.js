@@ -9,7 +9,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 function App() {
   return (
     <div className="App">
-      <h1>Teste app react</h1>
+      <h1>Programa - Cadastro de Alunos</h1>
       <BrowserRouter>
 
       <Nav variant="tabs">
