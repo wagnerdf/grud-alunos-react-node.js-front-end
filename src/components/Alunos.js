@@ -1,12 +1,20 @@
 import React from "react";
 import {Table} from "react-bootstrap";
+import AlunoDataService from "../services/aluno.service";
+
+
 
 class Alunos extends React.Component{
 
+    botaoDelete(id) {
+        console.log('Componente deletado ',id);
+        AlunoDataService.delete(id);
+        document.location.reload(true);
+      }
+   
+
     constructor(props){
         super(props);
-
-
         this.state = {
             alunos : []
         }
@@ -43,7 +51,8 @@ class Alunos extends React.Component{
                                 <td> {aluno.email} </td>
                                 <td>
                                     <button type="button" class="btn btn-primary btn-sm">Editar</button><span> </span>
-                                    <button type="button" class="btn btn-danger btn-sm">Excluir</button>
+                                    <button type="button" class="btn btn-danger btn-sm" onClick={() => this.botaoDelete(`${aluno.id}`)}>Excluir {aluno.id}</button>
+                                    
                                 </td>
                             </tr>
                       )
@@ -55,6 +64,11 @@ class Alunos extends React.Component{
         )
         
     }
+
+    
 }
+
+
+
 
 export default Alunos;
