@@ -2,38 +2,60 @@ import React from "react";
 import {Table} from "react-bootstrap";
 import AlunoDataService from "../services/aluno.service";
 
-
-
 class Alunos extends React.Component{
-
-    botaoDelete(id) {
-        console.log('Componente deletado ',id);
-        AlunoDataService.delete(id);
-        document.location.reload(true);
-      }
-   
 
     constructor(props){
         super(props);
-        this.state = {
-            alunos : []
-        }
+
+        this.state = { alunos: []};
     }
 
     componentDidMount(){
-        fetch("http://localhost:8080/api/aluno")
-        .then(resposta => resposta.json())
-        .then(dados => {
-           this.setState({ alunos : dados}) 
-        })
+        this.retrieveAlunos();
+        console.log("Componente montado");
     }
 
     componentWillUnmount(){
-       // alert("O componente Alunos foi desmontado!")
+        console.log("Componente desmontado");
+     }
+
+     retrieveAlunos(){
+
+        AlunoDataService.getAll()
+        .then(response => {
+            this.setState({
+                alunos: response.data
+            });
+            console.log(response.data);
+        })
+        .catch(e => {
+            console.log(e);
+        });
     }
 
+    refreshList(){
+        this.retrieveAlunos();
+    }
+
+    buttonDelete(id) {
+        AlunoDataService.delete(id)
+            .then(response => {
+                console.log(response.data);
+            })
+            .catch(e => {
+                console.log(e);
+            });
+        this.retrieveAlunos();
+        this.refreshList();    
+      }
+
+
     render(){
+
+        const { alunos } = this.state
+
         return(
+            <form>
             <Table striped bordered hover>
                 <thead>
                     <tr>
@@ -44,14 +66,14 @@ class Alunos extends React.Component{
                 </thead>
                 <tbody>
                     {
-                        this.state.alunos.map((aluno) => 
+                        alunos.map((aluno) => 
 
                             <tr>
                                 <td> {aluno.nome} </td>
                                 <td> {aluno.email} </td>
                                 <td>
-                                    <button type="button" class="btn btn-primary btn-sm">Editar</button><span> </span>
-                                    <button type="button" class="btn btn-danger btn-sm" onClick={() => this.botaoDelete(`${aluno.id}`)}>Excluir {aluno.id}</button>
+                                    <button type="button" className="btn btn-primary btn-sm">Editar</button><span> </span>
+                                    <button type="button" className="btn btn-danger btn-sm" onClick={() => this.buttonDelete(`${aluno.id}`)}>Excluir {aluno.id}</button>
                                     
                                 </td>
                             </tr>
@@ -60,15 +82,11 @@ class Alunos extends React.Component{
                 </tbody>
                 
             </Table>
-            
+            </form>
         )
         
     }
 
     
 }
-
-
-
-
 export default Alunos;
