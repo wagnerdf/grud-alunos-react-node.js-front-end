@@ -7,7 +7,7 @@ class Alunos extends React.Component{
     constructor(props){
         super(props);
 
-        this.state = { alunos: []};
+        this.state = { alunos: []}
     }
 
     componentDidMount(){
@@ -19,7 +19,7 @@ class Alunos extends React.Component{
         console.log("Componente desmontado");
      }
 
-     retrieveAlunos(){
+     retrieveAlunos = () =>{
 
         AlunoDataService.getAll()
         .then(response => {
@@ -33,20 +33,15 @@ class Alunos extends React.Component{
         });
     }
 
-    refreshList(){
-        this.retrieveAlunos();
-    }
-
-    buttonDelete(id) {
+    buttonDelete = (id) => {
         AlunoDataService.delete(id)
             .then(response => {
                 console.log(response.data);
+                this.retrieveAlunos();
             })
             .catch(e => {
                 console.log(e);
-            });
-        this.retrieveAlunos();
-        this.refreshList();    
+            });  
       }
 
 
@@ -72,9 +67,11 @@ class Alunos extends React.Component{
                                 <td> {aluno.nome} </td>
                                 <td> {aluno.email} </td>
                                 <td>
-                                    <button type="button" className="btn btn-primary btn-sm">Editar</button><span> </span>
-                                    <button type="button" className="btn btn-danger btn-sm" onClick={() => this.buttonDelete(`${aluno.id}`)}>Excluir {aluno.id}</button>
-                                    
+
+                                <button type="button" className="btn btn-primary btn-sm">Editar</button><span> </span>
+                                <button type="button" className="btn btn-danger btn-sm" onClick={() => this.buttonDelete(aluno.id)}>Excluir {aluno.id}</button>
+                            
+
                                 </td>
                             </tr>
                       )
@@ -83,6 +80,9 @@ class Alunos extends React.Component{
                 
             </Table>
             </form>
+
+            
+
         )
         
     }
