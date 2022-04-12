@@ -24,7 +24,7 @@ function App() {
       </Nav>
 
       <Switch>
-        <Route path="/" exact="true" component={Home}></Route>
+        <Route exact={true} path="/" component={Home}></Route>
         <Route path="/alunos" component={Alunos}></Route>
         <Route path="/cadastrar" component={Cadastrar}></Route>
         <Route path="/sobre" component={Sobre}></Route>

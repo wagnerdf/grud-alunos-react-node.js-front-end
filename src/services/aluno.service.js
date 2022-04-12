@@ -11,6 +11,10 @@ class AlunoDataService {
         return http.delete(`/aluno/${id}`);
     }
 
+    create(aluno){
+        return http.post("/aluno", aluno);
+    }
+
     
 }
 

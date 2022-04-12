@@ -1,36 +1,40 @@
 import React from "react";
-import {Table} from "react-bootstrap";
+import { Table, Button, Form } from "react-bootstrap";
 import AlunoDataService from "../services/aluno.service";
 
-class Alunos extends React.Component{
+class Alunos extends React.Component {
 
-    constructor(props){
+    constructor(props) {
         super(props);
 
-        this.state = { alunos: []}
+        this.state = { 
+            nome: '',
+            email: '',
+            alunos: [] 
+        }
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.retrieveAlunos();
         console.log("Componente montado");
     }
 
-    componentWillUnmount(){
+    componentWillUnmount() {
         console.log("Componente desmontado");
-     }
+    }
 
-     retrieveAlunos = () =>{
+    retrieveAlunos = () => {
 
         AlunoDataService.getAll()
-        .then(response => {
-            this.setState({
-                alunos: response.data
+            .then(response => {
+                this.setState({
+                    alunos: response.data
+                });
+                console.log(response.data);
+            })
+            .catch(e => {
+                console.log(e);
             });
-            console.log(response.data);
-        })
-        .catch(e => {
-            console.log(e);
-        });
     }
 
     buttonDelete = (id) => {
@@ -41,16 +45,28 @@ class Alunos extends React.Component{
             })
             .catch(e => {
                 console.log(e);
-            });  
-      }
+            });
+    }
+
+    registerAluno = (aluno) => {
+        AlunoDataService.create(aluno)
+            .then(response => {
+                this.setState({
+                    nome: response.aluno.nome,
+                    email: response.aluno.email,
+
+                    submitted: true
+                });
+                console.log(response.aluno);
+            })
+        .catch(e => {
+            console.log(e);        
+        });
+    }
 
 
-    render(){
-
-        const { alunos } = this.state
-
-        return(
-            <form>
+    renderTabela() {
+        return (
             <Table striped bordered hover>
                 <thead>
                     <tr>
@@ -61,32 +77,84 @@ class Alunos extends React.Component{
                 </thead>
                 <tbody>
                     {
-                        alunos.map((aluno) => 
+                        this.state.alunos.map((aluno, index) =>
 
-                            <tr>
+                            <tr key={index}>
                                 <td> {aluno.nome} </td>
                                 <td> {aluno.email} </td>
                                 <td>
 
-                                <button type="button" className="btn btn-primary btn-sm">Editar</button><span> </span>
-                                <button type="button" className="btn btn-danger btn-sm" onClick={() => this.buttonDelete(aluno.id)}>Excluir {aluno.id}</button>
-                            
+                                    <button type="button" className="btn btn-primary btn-sm">Editar</button><span> </span>
+                                    <button type="button" className="btn btn-danger btn-sm" onClick={() => this.buttonDelete(aluno.id)}>Excluir {aluno.id}</button>
+
 
                                 </td>
                             </tr>
-                      )
+                        )
                     }
                 </tbody>
-                
+
             </Table>
-            </form>
-
-            
-
         )
-        
+
     }
 
-    
+    updateNome = (e) => {
+        this.setState(
+            {
+                nome: e.target.value
+            }
+        )
+
+    }
+
+    updateEmail = (e) => {
+        this.setState(
+            {
+                email: e.target.value
+            }
+        )
+
+    }
+
+    submit = () => {
+        const aluno = {
+            nome: this.state.nome,
+            email: this.state.email
+        }
+
+        this.registerAluno(aluno);
+    }
+
+
+    render() {
+        return (
+            <div>
+
+                <Form>
+                    <Form.Group className="mb-3" controlId="formBasicPassword">
+                        <Form.Label>Nome: </Form.Label>
+                        <Form.Control type="text" placeholder="Digite o nome do aluno" value={this.state.nome} onChange={this.updateNome}/>
+                    </Form.Group>
+
+                    <Form.Group className="mb-3" controlId="formBasicEmail">
+                        <Form.Label>Email: </Form.Label>
+                        <Form.Control type="email" placeholder="Digite o e-mail do aluno" value={this.state.email} onChange={this.updateEmail}/>
+                        <Form.Text className="text-muted">
+                            Informe o e-mail do aluno.
+                        </Form.Text>
+                    </Form.Group>
+                                 
+                    <Button variant="primary" type="submit" onClick={this.submit}>
+                        Salvar
+                    </Button>
+                </Form>
+
+                {this.renderTabela()}
+            </div>
+        )
+    }
+
+
 }
 export default Alunos;
