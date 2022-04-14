@@ -1,5 +1,5 @@
 import React from "react";
-import { Table, Button, Form } from "react-bootstrap";
+import { Table, Button, Form, Modal } from "react-bootstrap";
 import AlunoDataService from "../services/aluno.service";
 
 class Alunos extends React.Component {
@@ -11,7 +11,8 @@ class Alunos extends React.Component {
             id: 0,
             nome: '',
             email: '',
-            alunos: [] 
+            alunos: [],
+            modalAberta: false
         }
     }
 
@@ -59,6 +60,7 @@ class Alunos extends React.Component {
                 email: aluno.data.email
             });
             console.log(aluno.data);
+            this.abrirModal();
         })
         .catch(e => {
             console.log(e);
@@ -69,13 +71,13 @@ class Alunos extends React.Component {
         AlunoDataService.create(aluno)
             .then(response => {
                 this.setState({
-                    id: response.aluno.id,
-                    nome: response.aluno.nome,
-                    email: response.aluno.email,
-
+                    id: aluno.id,
+                    nome: aluno.nome,
+                    email: aluno.email,
                     submitted: true
                 });
-                console.log(response.aluno.date);
+                console.log(response.data);
+                this.retrieveAlunos();
                 
             })
         .catch(e => {
@@ -90,7 +92,9 @@ class Alunos extends React.Component {
             )
             .then(response => {
                 console.log(response.data);
+                this.retrieveAlunos();
             })
+            
         .catch(e => {
             console.log(e);        
         });
@@ -153,6 +157,7 @@ class Alunos extends React.Component {
 
         if(this.state.id === 0){
             const aluno = {
+                id: this.state.id,
                 nome: this.state.nome, 
                 email: this.state.email
             }
@@ -166,6 +171,7 @@ class Alunos extends React.Component {
             this.updateAluno(aluno);
 
         }
+        this.fecharModal();
     }
 
     reset = () => {
@@ -174,38 +180,62 @@ class Alunos extends React.Component {
             nome: '',
             email: ''
         })
+        this.abrirModal();
     }
 
+    fecharModal = () => {
+        this.setState({
+            modalAberta: false
+        })
+    }
+
+    abrirModal = () => {
+        this.setState({
+            modalAberta: true
+        })
+    }
 
     render() {
         return (
             <div>
 
-                <Form>
-                    <Form.Group className="mb-3" >
-                        <Form.Label>ID: </Form.Label>
-                        <Form.Control type="text" value={this.state.id || 0} readOnly={true}/>
-                    </Form.Group>
-                    <Form.Group className="mb-3" >
-                        <Form.Label>Nome: </Form.Label>
-                        <Form.Control type="text" placeholder="Digite o nome do aluno" value={this.state.nome || ""} onChange={this.updateNome}/>
-                    </Form.Group>
+                <Modal show={this.state.modalAberta} onHide={this.fecharModal}>
+                    <Modal.Header closeButton>
+                    <Modal.Title>Dados do Aluno.</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form>
+                            <Form.Group className="mb-3" >
+                                <Form.Label>ID: </Form.Label>
+                                <Form.Control type="text" value={this.state.id || 0} readOnly={true}/>
+                            </Form.Group>
+                            <Form.Group className="mb-3" >
+                                <Form.Label>Nome: </Form.Label>
+                                <Form.Control type="text" placeholder="Digite o nome do aluno" value={this.state.nome || ""} onChange={this.updateNome}/>
+                            </Form.Group>
 
-                    <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <Form.Label>Email: </Form.Label>
-                        <Form.Control type="email" placeholder="Digite o e-mail do aluno" value={this.state.email || ""} onChange={this.updateEmail}/>
-                        <Form.Text className="text-muted">
-                            Informe o e-mail do aluno.
-                        </Form.Text>
-                    </Form.Group>
-                                 
-                    <Button variant="primary" type="submit" onClick={this.submit}>
-                        Salvar
-                    </Button><span> </span>
-                    <Button variant="warning" type="submit" onClick={this.reset}>
-                        Novo
-                    </Button>
-                </Form>
+                            <Form.Group className="mb-3" controlId="formBasicEmail">
+                                <Form.Label>Email: </Form.Label>
+                                <Form.Control type="email" placeholder="Digite o e-mail do aluno" value={this.state.email || ""} onChange={this.updateEmail}/>
+                                <Form.Text className="text-muted">
+                                    Informe o e-mail do aluno.
+                                </Form.Text>
+                            </Form.Group>
+                        </Form>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={this.fecharModal}>
+                            Close
+                        </Button>
+                        <Button variant="primary" type="submit" onClick={this.submit}>
+                                Salvar
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+
+                <Button variant="warning" type="submit" onClick={this.reset}>
+                            Novo
+                </Button>
 
                 {this.renderTabela()}
             </div>
